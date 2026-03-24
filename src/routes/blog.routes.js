@@ -1,5 +1,5 @@
 import expresss from 'express'
-import { createBlog , getBlogById, getBlogs, updateBlog} from '../controllers/blog.controller.js'
+import { createBlog , deleteBlog, getBlogById, getBlogs, updateBlog} from '../controllers/blog.controller.js'
 
 
 const router= expresss.Router();
@@ -10,5 +10,6 @@ router.post("/create",authMiddleware,createBlog)
 router.get('/',authMiddleware,getBlogs)
 router.get('/:id',authMiddleware,getBlogById)
 router.put('/:id',authMiddleware,updateBlog)
+router.delete('/:id',authMiddleware,deleteBlog)
 
 export default router;

@@ -72,8 +72,12 @@ export const getBlogById = async (req,res)=>{
     }
 }
 
-export const updateBlog = async ()=>{
-    try {
+export const updateBlog = async (req,res)=>{
+    try 
+    {
+        const {title,content}=req.body;
+
+
         const id = req.params.id
         const blog = await Blog.findById(id)
 
@@ -90,10 +94,31 @@ export const updateBlog = async ()=>{
 
         await blog.save()
 
-        res.status(201).json({message:"BLOG HAS BEEN UPDATED SUCESSFULLY"})
+        res.status(200).json({message:"BLOG HAS BEEN UPDATED SUCESSFULLY"})
         
     } catch (error) {
         console.log(error)
         
     }
+}
+
+export const deleteBlog = async (req,res)=>{
+try {
+        const id = req.params.id
+    const blog = await Blog.findById(id)
+     if(!blog){
+            return res.status(404).json({message:"No post found"})
+        }
+    if(blog.author.toString() !== req.user.id){
+         return res.status(403).json({message :"Not authorized"})
+    }
+
+    await blog.deleteOne()
+    res.status(200).json({message:"It has been deleted sucessfully"})
+    
+} catch (error) {
+        console.error(error);
+    res.status(500).json({ message: error.message });
+    
+}
 }
