@@ -71,3 +71,29 @@ export const getBlogById = async (req,res)=>{
         
     }
 }
+
+export const updateBlog = async ()=>{
+    try {
+        const id = req.params.id
+        const blog = await Blog.findById(id)
+
+        if(!blog){
+            return res.status(404).json({message:"No post found"})
+        }
+
+        if(blog.author.toString() !== req.user.id){
+            return res.status(403).json({message :"Not authorized"})
+        }
+
+        blog.title = title || blog.title;
+        blog.content = content || blog.content;
+
+        await blog.save()
+
+        res.status(201).json({message:"BLOG HAS BEEN UPDATED SUCESSFULLY"})
+        
+    } catch (error) {
+        console.log(error)
+        
+    }
+}
