@@ -28,3 +28,30 @@ export const createBlog = async (req,res)=>{
         
     }
 }
+
+export const getBlogs = async (req,res)=>{
+    try {
+        //pagenation
+        const page = parserInt(req.query.page) || 1;
+        const limit = parserInt(req.query.limit) ||5;
+
+        const skip = (page -1)*limit
+
+        const blogs = await Blog.find()
+        .populate("author","name eamil")
+        .skip(skip)
+        .limit(limit)
+        .sort({createdAtt:-1});
+
+        res.status(200).json({
+            page,
+            totla:blogs.length,
+            blogs,
+        })
+        
+    } catch (error) {
+        
+        res.status(500).json({message:error.message})
+    }
+}
+
