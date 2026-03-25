@@ -32,3 +32,27 @@ export const createComment = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getCommentsByBlog = async (req,res) =>{
+try {
+    const blogId = req.params.blogId;
+
+  const getcomments= await Comment.find({blog:blogId}).populate("user","name email")
+  if(getcomments.length === 0){
+    return res.status(400).json({message:"No comment found"})
+
+
+  }
+
+  res.status(200).json(getcomments)
+  
+} catch (error) {
+  console.log(error)
+  return res.status(500).json({message :"server error"})
+  
+}
+
+
+
+
+}
