@@ -1,34 +1,34 @@
-import mongoose from "mongoose";
-import Comment from '../models/comment.model'
-import Blog from '../models/blog.model'
+import Comment from '../models/comment.model.js';
+import Blog from '../models/blog.model.js';
 
-export const createComment = async (req,res)=>{
-    try {
-        const {text}=req.body
-        const blogId = req.params.blogId;
+export const createComment = async (req, res) => {
+  try {
+    const { text } = req.body;
+    const blogId = req.params.blogId;
 
-        const blog = await Blog.findbyid(blogId)
-        if(!blog){
-            return res.status(404).json({message:"blog not found"})
-        }
-        const user = await req.user.id
+    if (!text) {
+      return res.status(400).json({ message: "Text is required" });
+    }
 
-        const newComment = await Comment.create({
-            text,
-            user:req.user.id,
-            blog:blogId
-        })
+    const blog = await Blog.findById(blogId);
 
-            res.status(201).json({
-      message: "Comment added successfully",
-      comment,
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
+    const newComment = await Comment.create({
+      text,
+      user: req.user.id,
+      blog: blogId,
     });
 
-        console.error(error);
-    res.status(500).json({ message: error.message });
+    res.status(201).json({
+      message: "Comment added successfully",
+      comment: newComment,
+    });
 
-        
-    } catch (error) {
-        
-    }
-}
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
