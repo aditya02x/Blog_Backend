@@ -123,3 +123,42 @@ try {
     
 }
 }
+
+export const toggleLike = async (req, res) => {
+  try {
+    const blogId = req.params.id;
+    const userId = req.user.id;
+
+    const blog = await Blog.findById(blogId);
+
+    if (!blog) {
+      return res.status(404).json({ message: "No blog found" });
+    }
+
+    // check if already liked
+    const isLiked = blog.likes.some(
+      (id) => id.toString() === userId
+    );
+
+    if (isLiked) {
+      // remove like
+      blog.likes = blog.likes.filter(
+        (id) => id.toString() !== userId
+      );
+    } else {
+      // add like
+      blog.likes.push(userId);
+    }
+
+    await blog.save();
+
+    res.status(200).json({
+      message: isLiked ? "Unliked successfully" : "Liked successfully",
+      likesCount: blog.likes.length,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
