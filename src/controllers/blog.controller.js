@@ -30,32 +30,42 @@ export const createBlog = async (req,res)=>{
     }
 }
 
-export const getBlogs = async (req,res)=>{
-    try {
-        //pagenation
-        const page = parserInt(req.query.page) || 1;
-        const limit = parserInt(req.query.limit) ||5;
+export const getBlogs = async (req, res) => {
+  try {
+    // pagination
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
 
-        const skip = (page -1)*limit
+    const skip = (page - 1) * limit;
 
-        const blogs = await Blog.find()
-        .populate("author","name eamil")
-        .skip(skip)
-        .limit(limit)
-        .sort({createdAtt:-1});
+    // search
+    const search = req.query.search;
 
-        res.status(200).json({
-            page,
-            totla:blogs.length,
-            blogs,
-        })
-        
-    } catch (error) {
-        
-        res.status(500).json({message:error.message})
+    let filter = {};
+
+    if (search) {
+      filter.title = {
+        $regex: search,
+        $options: "i",
+      };
     }
-}
 
+    const blogs = await Blog.find(filter)
+      .populate("author", "name email")
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      page,
+      total: blogs.length,
+      blogs,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 export const getBlogById = async (req,res)=>{
     try {
         const id = req.params.id;
@@ -162,3 +172,4 @@ export const toggleLike = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
